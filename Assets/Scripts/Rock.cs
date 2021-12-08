@@ -43,14 +43,16 @@ public class Rock : MonoBehaviour
 
     public void PickUp()
     {
+        transform.SetParent(Camera.main.transform);
+        transform.localPosition = new Vector3(0, 0, 5);
+
         var body = GetComponent<Rigidbody>(); 
         body.useGravity = false;
         body.angularVelocity = Vector3.zero;
         body.velocity = Vector3.zero;
         body.angularDrag = 1f;
 
-        transform.position = Camera.main.transform.position;
-        transform.position += new Vector3(0, -5, 1);
+        
 
         gameObject.layer = 6;
         GetComponent<Renderer>().material = HighlightedMaterial;
@@ -58,11 +60,18 @@ public class Rock : MonoBehaviour
 
     public void Drop()
     {
+        transform.SetParent(null);
+
         var body = GetComponent<Rigidbody>(); 
         body.useGravity = true;
 
         gameObject.layer = 0;
         GetComponent<Renderer>().material = RockMaterial;
+    }
+
+    public void Zoom(float distance)
+    {
+        transform.localPosition = new Vector3(0, 0, distance);
     }
 
     public void Put(Vector3 pos)

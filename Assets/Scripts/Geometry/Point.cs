@@ -8,8 +8,9 @@ namespace Geometry
     public static class Point
     {
 
-        public static List<Vector3> GeneratePointsInRectPrism(int numPoints, float xScale, float yScale, float zScale)
+        public static List<Vector3> GeneratePointsInRectPrism(float density, float xScale, float yScale, float zScale)
         {
+            int numPoints = (int)(density * xScale * yScale * zScale);
             List<Vector3> ps = new List<Vector3>(numPoints);
             for (int i = 0; i < numPoints; i++) {
                 ps.Add(new Vector3(
@@ -22,13 +23,14 @@ namespace Geometry
             return ps;
         }
 
-        public static List<Vector3> GeneratePointsInCube(int numPoints, float scale)
+        public static List<Vector3> GeneratePointsInCube(float density, float scale)
         {
-            return GeneratePointsInRectPrism(numPoints, scale, scale, scale);
+            return GeneratePointsInRectPrism(density, scale, scale, scale);
         }
 
-        public static List<Vector3> GeneratePointsInRoundedEdges(int numPoints, float xScale, float yScale, float zScale)
+        public static List<Vector3> GeneratePointsInRoundedEdges(float density, float xScale, float yScale, float zScale)
         {
+            int numPoints = (int)(density * xScale * yScale * zScale);
             List<Vector3> ps = new List<Vector3>(numPoints);
             for (int i = 0; i < numPoints; i++) {
                 float dist = Random.Range(0, 1f);
@@ -49,8 +51,8 @@ namespace Geometry
             return ps;
         }
 
-        public static List<Vector3> GeneratePointsInSphere(int numPoints, float scale) {
-            return GeneratePointsInRoundedEdges(numPoints, scale, scale, scale);
+        public static List<Vector3> GeneratePointsInSphere(float density, float scale) {
+            return GeneratePointsInRoundedEdges(density, scale, scale, scale);
         }
     }
 }

@@ -76,7 +76,7 @@ namespace Geometry
 
         public List<Triangle> ConvexHull()
         {
-            return DivideAndConquerConvexHull(Points);
+            return IncrementalConvexHull(Points);
         }
 
         public static List<Triangle> DivideAndConquerConvexHull(List<Vector3> ps)

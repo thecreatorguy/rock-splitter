@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using Geometry;
 
 public class RockHandler : MonoBehaviour
@@ -8,9 +9,17 @@ public class RockHandler : MonoBehaviour
     public GameObject RockPrefab;
     public static GameObject staticRockPrefab;
 
-    List<Rock> rocks;
+    public Dropdown DensityDropdown;
+    public Dropdown WidthDropdown;
+    public Dropdown HeightDropdown;
+    public Dropdown DepthDropdown;
     public Rock FocusedRock;
     Vector3 lastpos = Vector3.zero;
+
+    float rockPointDensity = 25;
+    float rockWidth = 1;
+    float rockHeight = 1;
+    float rockDepth = 1;
 
     public enum HandlerState { None, Focused };
     public HandlerState State = HandlerState.None;
@@ -19,7 +28,72 @@ public class RockHandler : MonoBehaviour
     void Start()
     {
         staticRockPrefab = RockPrefab;
-        Reset();
+
+        DensityDropdown.onValueChanged.AddListener(delegate {
+            string value = DensityDropdown.options[DensityDropdown.value].text;
+            if (value == "Low") 
+            {
+                rockPointDensity = 25;
+            }
+            else if (value == "Medium") 
+            {
+                rockPointDensity = 50;
+            }
+            else if (value == "High") 
+            {
+                rockPointDensity = 100;
+            }
+        });
+
+        WidthDropdown.onValueChanged.AddListener(delegate {
+            string value = WidthDropdown.options[WidthDropdown.value].text;
+            if (value == "1") 
+            {
+                rockWidth = 1;
+            }
+            else if (value == "2") 
+            {
+                rockWidth = 2;
+            }
+            else if (value == "3") 
+            {
+                rockWidth = 3;
+            }
+        });
+
+        HeightDropdown.onValueChanged.AddListener(delegate {
+            string value = HeightDropdown.options[HeightDropdown.value].text;
+            if (value == "1") 
+            {
+                rockHeight = 1;
+            }
+            else if (value == "2") 
+            {
+                rockHeight = 2;
+            }
+            else if (value == "3") 
+            {
+                rockHeight = 3;
+            }
+        });
+
+        DepthDropdown.onValueChanged.AddListener(delegate {
+            string value = DepthDropdown.options[DepthDropdown.value].text;
+            if (value == "1") 
+            {
+                rockDepth = 1;
+            }
+            else if (value == "2") 
+            {
+                rockDepth = 2;
+            }
+            else if (value == "3") 
+            {
+                rockDepth = 3;
+            }
+        });        
+
+        ResetRect();
     }
 
     public static Rock InstatiateRock(PointCloud pc, Vector3 position, Quaternion rotation)
@@ -39,7 +113,7 @@ public class RockHandler : MonoBehaviour
         return InstatiateRock(pc, new Vector3(0, 1, 0), Quaternion.identity);
     }
 
-    void Reset() 
+    void ResetRect() 
     {
         State = HandlerState.None;
         FocusedRock = null;
@@ -48,7 +122,21 @@ public class RockHandler : MonoBehaviour
         {
             Destroy(r);
         }
-        InstatiateRock(new PointCloud(Point.GeneratePointsInRoundedEdges(50, 3, 1, 3)));
+
+        InstatiateRock(new PointCloud(Point.GeneratePointsInRectPrism(rockPointDensity, rockWidth, rockHeight, rockDepth)));
+    }
+
+    void ResetSphere() 
+    {
+        State = HandlerState.None;
+        FocusedRock = null;
+
+        foreach(var r in GameObject.FindGameObjectsWithTag("Rock"))
+        {
+            Destroy(r);
+        }
+
+        InstatiateRock(new PointCloud(Point.GeneratePointsInRoundedEdges(rockPointDensity, rockWidth, rockHeight, rockDepth)));
     }
 
     void TableRocks()
@@ -75,7 +163,12 @@ public class RockHandler : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.R))
         {
-            Reset();
+            ResetRect();
+        }
+
+        else if (Input.GetKeyDown(KeyCode.S))
+        {
+            ResetSphere();
         }
 
         switch (State) {
@@ -120,6 +213,21 @@ public class RockHandler : MonoBehaviour
             break;
 
         case HandlerState.Focused:
+            if (Input.GetKeyDown(KeyCode.Z)) 
+            {
+                if (FocusedRock)
+                {
+                    FocusedRock.Zoom(3);
+                }
+            }
+            if (Input.GetKeyUp(KeyCode.Z)) 
+            {
+                if (FocusedRock)
+                {
+                    FocusedRock.Zoom(5);
+                }
+            }
+
             if (Input.GetMouseButtonDown(0))
             {
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
